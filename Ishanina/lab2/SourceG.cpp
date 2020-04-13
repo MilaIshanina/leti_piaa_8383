@@ -28,43 +28,43 @@ public:
     }
 };
 
-bool comp(Path a, Path b) {//компаратор
+bool comp(Path a, Path b) {//comparator
     return a.getWeightPath() < b.getWeightPath();
 }
 
 bool func(std::vector<Path>* vector, char curChar, char endChar, std::vector<char>* answer, int depth) {
     depth++;
 
-    std::cout << setw(depth + 1) << ' ' << "Обрабатываем вершину:    " << curChar << std::endl;
+    std::cout << setw(depth + 1) << ' ' << "Processing the vertex:    " << curChar << std::endl;
 
-    if (curChar == endChar) {    //выход из рекурсии
-        std::cout << setw(depth + 1) << ' ' << "Дошли до искомой вершины    " << endChar << ". Функция возвращает true и завершает работу." << std::endl;
+    if (curChar == endChar) {    //exit from recursion
+        std::cout << setw(depth + 1) << ' ' << "Reached the desired peak    " << endChar << ". The function returns TRUE and shuts down." << std::endl;
         return true;
     }
 
-    //curChar - текущая вершина
+
     
-    std::cout << setw(depth + 1) << ' ' << "Поиск путей, ведущих из этой вершины." << std::endl;
+    std::cout << setw(depth + 1) << ' ' << "Search for paths leading from this vertex." << std::endl;
     std::vector<Path> temporaryVector;
     temporaryVector.reserve(0);
-    for (Path path : *vector) {// будут пройдены все вершины в векторе
-        if (path.getNameFrom() == curChar) {//отбирает все пути из нужной вершины
-            std::cout << setw(depth + 1) << ' ' << "Так как вершина   " << path.getNameOut() << "   исходит из текущей вершины, записываем этот путь в векор" << std::endl;
-            temporaryVector.emplace_back(path);//записывается в вектор
+    for (Path path : *vector) {// all vertexes in the vector will be passed
+        if (path.getNameFrom() == curChar) {//selects all paths from the desired vertex
+            std::cout << setw(depth + 1) << ' ' << "Since the vertex   " << path.getNameOut() << "   comes from the current vertex, writing this path to the vector." << std::endl;
+            temporaryVector.emplace_back(path);//written to a vector
         }
     }
 
-    //т к нужен самый дешевый путь то соитируем
+    //since we need the cheapest way we will cohabit
 
-    std::cout << setw(depth + 1) << ' ' << "Сортировка вершин по минимальному весу." << std::endl;
+    std::cout << setw(depth + 1) << ' ' << "Sorting of vertices of minimum weight." << std::endl;
 
     std::sort(temporaryVector.begin(), temporaryVector.end(), comp);
 
 
-    for (Path path : temporaryVector) {//проходимся по всем вершинам
-        if (func(vector, path.getNameOut(), endChar, answer, depth)) {//новая переменная 
+    for (Path path : temporaryVector) {//going through all the vertexes
+        if (func(vector, path.getNameOut(), endChar, answer, depth)) {//new variable
             depth--;
-            std::cout << setw(depth + 1) << ' ' << "Записываем вершину    " << path.getNameOut() <<    "    в вектор ответа" << std::endl;
+            std::cout << setw(depth + 1) << ' ' << "Writing a vertex    " << path.getNameOut() <<    "    in the response vector" << std::endl;
             answer->emplace_back(path.getNameOut());
             return true;
         }
@@ -86,7 +86,7 @@ int main() {
 
     char startChar;
     char endChar;
-    std::cout << "Пожалуйста, введите начальную вершину и конечную, а также ребра графа с указанием его веса: " << std::endl;
+    std::cout << "Please, enter the starting vertex and ending vertex, as well as the edges of the graph with its weight: " << std::endl;
 
     std::cin >> startChar;
     std::cin >> endChar;
@@ -100,7 +100,7 @@ int main() {
         vector.emplace_back(Path(start, end, weight));
     }
 
-    std::cout << "Запускается функция жадного алгоритма" << std::endl;
+    std::cout << "The greedy algorithm function is started" << std::endl;
 
     if (!func(&vector, startChar, endChar, &answer, depth))
     {
@@ -110,13 +110,13 @@ int main() {
 
     if (flag)
     {
-        std::cout << "Функция жадного алгоритма завершает работую" << std::endl;
-        std::cout << "Добавляется в вектор ответа начальная вершина." << std::endl;
+        std::cout << "The greedy algorithm function shuts down" << std::endl;
+        std::cout << "The initial vertex is added to the response vector." << std::endl;
         answer.emplace_back(startChar);
-        std::cout << "Реверсируем вектор ответа." << std::endl;
+        std::cout << "Reversing the response vector." << std::endl;
         std::reverse(answer.begin(), answer.end());
 
-        std::cout << "Ответ:    " << std::endl;
+        std::cout << "Answer:    " << std::endl;
         for (char sym : answer) {
             std::cout << sym;
         }
