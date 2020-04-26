@@ -66,7 +66,7 @@ bool comp(Path a, Path b) {
 
 bool comp2(Path* a, Path* b) {//the comparator is used to choose where to go. For example, there are 2 paths, one 10/40 and the other 15/30. It is necessary to go to the second, since 30-15 < 40-10
 
-    return (a->getBandwidth() - a->getFlow()) <= (b->getBandwidth() - b->getFlow());
+    return (a->getBandwidth() - a->getFlow()) < (b->getBandwidth() - b->getFlow());
 }
 
 bool isVisitedPath(std::vector<Path*>* local, char element, long int depth) {
