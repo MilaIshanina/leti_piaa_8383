@@ -36,17 +36,19 @@ public:
 
 };
 
-void findMin(std::vector<Path*>* local, int* maxFlow, long int depth) {//function for selecting the minimum difference between throughput and flow
+bool comp(Path a, Path b);
+
+void findMin(std::vector<Path*>& local, int* maxFlow, long int depth) {//function for selecting the minimum difference between throughput and flow
     std::cout << std::setw(depth + 1) << ' ' << "The function of selecting the minimum difference between bandwidth and flow, as well as changing information, is started." << std::endl;
-    int Min = local->front()->getBandwidth();   //front() Returns a reference to the first element in the vector container
-    for (Path* path : *local) {
+    int Min = local.front()->getBandwidth();   //front() Returns a reference to the first element in the vector container
+    for (Path* path : local) {
         if (Min > (path->getBandwidth() - path->getFlow())) {
             Min = path->getBandwidth() - path->getFlow();
         }
     }
     std::cout << std::setw(depth + 1) << ' ' << "Minimum =  " << Min << std::endl;
     std::cout << std::setw(depth + 1) << ' ' << "Adding the found minimum to the path threads." << std::endl;
-    for (Path* path : *local) {
+    for (Path* path : local) {
         path->setFlow(path->getFlow() + Min);//now add the found minimum to the stream
     }
 
@@ -69,9 +71,9 @@ bool comp2(Path* a, Path* b) {//the comparator is used to choose where to go. Fo
     return (a->getBandwidth() - a->getFlow()) < (b->getBandwidth() - b->getFlow());
 }
 
-bool isVisitedPath(std::vector<Path*>* local, char element, long int depth) {
+bool isVisitedPath(std::vector<Path*>& local, char element, long int depth) {
     std::cout << std::setw(depth + 1) << ' ' << "A function is launched to check whether this vertex has already been visited." << std::endl;
-    for (Path* path : *local) {
+    for (Path* path : local) {
         if (element == path->getNameFrom()) {
             std::cout << std::setw(depth + 1) << ' ' << "The check function shuts down. Top  " << element << "  is already in sight. This means that we will not go along this edge." << std::endl;
             return false;
@@ -81,7 +83,7 @@ bool isVisitedPath(std::vector<Path*>* local, char element, long int depth) {
     return true;
 }
 
-bool findPath(std::vector<Path>* paths, std::vector<Path*>* local, std::vector<Path*>* local2, char myPoint, char* endPoint, long int depth) {
+bool findPath(std::vector<Path>& paths, std::vector<Path*>& local, std::vector<Path*>& local2, char myPoint, char* endPoint, long int depth) {
     depth++;
 
     std::cout << std::setw(depth + 1) << ' ' << "The path search function starts." << std::endl;
@@ -93,10 +95,9 @@ bool findPath(std::vector<Path>* paths, std::vector<Path*>* local, std::vector<P
     }
 
     std::vector<Path*> localPaths;
-    localPaths.reserve(0);
-
+    
     std::cout << std::setw(depth + 1) << ' ' << "Selecting edges that originate from the current vertex." << std::endl;
-    for (auto& path : *paths) {//selecting which edges come from the current vertex
+    for (auto& path : paths) {//selecting which edges come from the current vertex
         if (path.getNameFrom() == myPoint) {
             std::cout << std::setw(depth + 1) << ' ' << "Since the edge:  " << path.getNameFrom() << ' ' << path.getNameOut() << "  originates from the current vertex  " << myPoint << ". Then we add this edge to the temporary path vector." << std::endl;
 
@@ -113,18 +114,18 @@ bool findPath(std::vector<Path>* paths, std::vector<Path*>* local, std::vector<P
             std::cout << std::setw(depth + 1) << ' ' << "Checking that the vertex where the edge enters has not been visited yet." << std::endl;
             if (isVisitedPath(local2, path->getNameOut(), depth)) {//if we haven't visited the top yet
                 std::cout << std::setw(depth + 1) << ' ' << "Writing an edge  " << path->getNameFrom() << ' ' << path->getNameOut() << "  in the vector of viewed edges." << std::endl;
-                local2->emplace_back(path);
+                local2.emplace_back(path);
                 std::cout << std::setw(depth + 1) << ' ' << "Recursively calling the function, but now the current vertex will be:  " << path->getNameOut() << std::endl;
                 if (findPath(paths, local, local2, path->getNameOut(), endPoint, depth)) {//рекурсивно вызываем функцию с непросмотренной вершиной
                     std::cout << std::setw(depth + 1) << ' ' << "Since the function returned true, it means that the vertex was found. Writing an edge  " << path->getNameFrom() << ' ' << path->getNameOut() << "  in the response vector." << std::endl;
                     depth--;
-                    local->emplace_back(path);
+                    local.emplace_back(path);
                     return true;
                 }
                 else {
                     //делаем откат назад
                     std::cout << std::setw(depth + 1) << ' ' << "Making a rollback." << std::endl;
-                    local2->pop_back();
+                    local2.pop_back();
                 }
             }
         }
@@ -146,14 +147,11 @@ int main() {
     int flag2 = 0;
     long int depth = 0;
     std::vector<Path*> local;
-    local.reserve(0);
-
+    
     std::vector<Path*> local2;
-    local.reserve(0);
-
+    
     std::vector<Path> paths;
-    paths.reserve(0);
-
+    
     int maxFlow = 0;
     std::cout << "Hello! Please enter the number of oriented edges of the graph, the source, drain, and edges of the graph." << std::endl;
     std::cin >> count;
@@ -174,8 +172,8 @@ int main() {
     if (flag2)
     {
         std::cout << "The path search function is called." << std::endl;
-        while (findPath(&paths, &local, &local2, startPoint, &endPoint, depth)) {//as soon as we find the path to the drain, we call the function to find the minimum and change the flow
-            findMin(&local, &maxFlow, depth);
+        while (findPath(paths, local, local2, startPoint, &endPoint, depth)) {// as soon as we find the path to the drain, we call the function to find the minimum and change the flow
+            findMin(local, &maxFlow, depth);
             std::cout << std::setw(depth + 1) << ' ' << "Clearing the response vector and the vector of viewed edges." << std::endl;
             local.clear();
             local2.clear();
