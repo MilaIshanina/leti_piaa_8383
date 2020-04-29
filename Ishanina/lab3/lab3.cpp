@@ -172,7 +172,7 @@ int main() {
     if (flag2)
     {
         std::cout << "The path search function is called." << std::endl;
-        while (findPath(paths, local, local2, startPoint, &endPoint, depth)) {// as soon as we find the path to the drain, we call the function to find the minimum and change the flow
+        while (findPath(paths, local, local2, startPoint, &endPoint, depth)) {//as soon as we find the path to the drain, we call the function to find the minimum and change the flow
             findMin(local, &maxFlow, depth);
             std::cout << std::setw(depth + 1) << ' ' << "Clearing the response vector and the vector of viewed edges." << std::endl;
             local.clear();
@@ -182,7 +182,20 @@ int main() {
 
         std::cout << std::setw(depth + 1) << ' ' << "Sorting the output edges in lexicographic order. " << std::endl;
 
-        std::sort(paths.begin(), paths.end(), comp);//sort the vertices in lexicographical order
+        std::sort(paths.begin(), paths.end(),
+            [](const Path& a, const Path& b)
+            {
+                if (a.getNameFrom() != b.getNameFrom()) {
+
+                    return a.getNameFrom() < b.getNameFrom();
+                }
+                else {
+                    return a.getNameOut() < b.getNameOut();
+                }
+                
+            });
+
+        //std::sort(paths.begin(), paths.end(), comp);//sort the vertices in lexicographical order
         std::cout << std::endl;
         std::cout << "Answer:  " << std::endl;
         std::cout << "The value of maximum flow =  " << maxFlow << std::endl;
