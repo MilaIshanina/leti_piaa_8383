@@ -144,8 +144,8 @@ std::vector<std::string> split(const std::string& s, char delim) {//generates a 
     return elems;
 }
 
-void createAnswer(Top* bor, std::string text, std::vector<std::string>* strings,
-    std::vector<std::pair<int, int>>* vectorAnswers) {
+void createAnswer(Top* bor, std::string text, std::vector<std::string>& strings,
+    std::vector<std::pair<int, int>>& vectorAnswers) {
 
     int count = 0;
     Top* cur = bor;
@@ -159,8 +159,8 @@ void createAnswer(Top* bor, std::string text, std::vector<std::string>* strings,
                 if (cur->isTerminal1()) {
 
                     for (auto numberString : cur->getNumberStrings()) {
-                        vectorAnswers->emplace_back(
-                            std::make_pair(count - strings->at(numberString).length() + 1, numberString));
+                        vectorAnswers.emplace_back(
+                            std::make_pair(count - strings.at(numberString).length() + 1, numberString));
                     }
                 }
                 break;
@@ -283,7 +283,7 @@ int main() {
         }
     }
 
-    createAnswer(bor, text, &strings, &vectorAnswers);
+    createAnswer(bor, text, strings, vectorAnswers);
 
 
 
